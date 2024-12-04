@@ -8,22 +8,22 @@ class Calculator extends Frame implements WindowListener, ActionListener
 {	
 	private Label dispL, inputL;
 	private JButton[] button;  //버튼은 총 18개이다
-	
+	//	private Image backgroundImage; 
 	//sb는 입력된 값이 저장되는 곳입니다.
 	//disp는 화면에 표시될 계산식입니다.
 	
 	StringBuffer sb= new StringBuffer();
 	DecimalFormat df= new DecimalFormat("#,##0");  //소숫점 이하 15자리까지 표현
-	private String disp;   //중간 결과값
-	private int op;   //연산자가 들어가는 int
-	public double result;  //맨 처음 값
-	public double number;
-	boolean opClick=false;
-
+	private String disp;    // 계산식 결과를 저장
+	private int op;   		// 연산자가 코드 (예: +, -, *, /)
+	public double result;   // 계산결과
+	public double number;	// 입력된값
+	boolean opClick=false;  // 연산자가 클릭되었는지 여부
+	// Calculator 생성자
 	public Calculator(){
 		super("강영수의 계산기");
-
-		Panel whole = new Panel();  //전체
+	
+		Panel whole = new Panel();  // 전체 레아이웃
 	    Panel p1 = new Panel();  
 	    Panel p2 = new Panel();  
 		Panel p3 = new Panel(); 
@@ -32,23 +32,29 @@ class Calculator extends Frame implements WindowListener, ActionListener
 		Panel p6 = new Panel();
 		Panel p7 = new Panel();
 		
-		//.....버튼
+		// 버튼이름
 		String[] buttonName = {"7","8","9","/","4","5","6","*","1","2","3","-",".","0","=","+","Back","C"};
 		button = new JButton[18];
+		//for(초기문, 조건문, 증감식){
 		for(int i=0;i<18;i++){
 			 button[i]=new JButton(buttonName[i]);
 		}
-		
-		//....라벨
+		button[14].setBackground(new Color(255, 153, 153));  // "=" 버튼 색상
+	    button[17].setBackground(new Color(153, 255, 255));  // "C" 버튼 색상
+	    
+	    //....라벨
 		dispL= new Label("0",Label.RIGHT);
-		dispL.setBackground(new Color(139,158,226));
-		inputL= new Label("0", Label.RIGHT);
-		inputL.setBackground(new Color(139,158,226));
+		dispL.setBackground(new Color(102, 178, 255, 255));  // RGB색상
+		dispL.setFont(new Font("나눔고딕", Font.BOLD, 20));
 		
+		inputL= new Label("0", Label.RIGHT);
+		inputL.setBackground(new Color(255, 255, 255));
+		inputL.setFont(new Font("나눔고딕", Font.BOLD, 20));
 		//....전체 패널(whole) 7행 1열 각 행사이 5픽셀 간격을 둔다
 		whole.setLayout(new GridLayout(7,1,5,5));
 		
 		//계산기의 결과값을 표시하는 레이아웃이다.
+		//패널에 컴포넌트 배치
 		p1.setLayout(new GridLayout(1,1,5,5));
 		p1.add(dispL);  
 		
@@ -88,18 +94,26 @@ class Calculator extends Frame implements WindowListener, ActionListener
 		whole.add(p7);
 		add("Center", whole);
 
-		//...윈도우 창 설정
-		setBounds(900,180,350,500);
-		setBackground(new Color(105,132,224));
-		setVisible(true);
-		//...이벤트 설정
-		for(int i=0;i<18;i++){ button[i].addActionListener(this); }
+		//.... 윈도우 창의 위치와 크기를 설정
+		setBounds(800,180,350,500);
+		setBackground(new Color(0, 51, 102));
+		setVisible(true);  //윈도우 창을 화면에 보이도록 설정
+		
+		//...버튼 이벤트 설정
+		// i를 0번부터 17번 까지 증가시키면서 실행됩니다. 따라서 버튼 button[i]가 18번에 호출되며
+		// 배열 button에 포함된 모든 버튼에 addActionListener(this)이 호출이됩니다.
+
+		for(int i=0;i<18;i++){ 
+			button[i].addActionListener(this);  
+			button[i].setFont(new Font("나눔고딕", Font.BOLD, 20));}  // 숫자 키판에 글자폰트를 수정한다
 		this.addWindowListener(this);
 	}
 
+	
 		//...actionPerFormed 이벤트
 		public void actionPerformed(ActionEvent e){
 			//전에 입력했던 연산자가 =이었을 때(계산이 한번 종료된 후, 그 값에 다시 계산을 학[ 만들기 위한 초기작업)
+			// 61은 연산자 = 에 해당된다.
 			if(op==61){  
 				sb.delete(0,sb.length());
 				sb.append(result);
@@ -125,10 +139,13 @@ class Calculator extends Frame implements WindowListener, ActionListener
 				result=0;
 				op=0;
 				}
+			
 			else if(e.getActionCommand()=="Back"){ 
 				if(sb.length()>0) sb=sb.delete(sb.length()-1,sb.length());
 				else sb.delete(0,sb.length());
 			}
+			
+			//소수점 버튼 클릭시 
 			else if(e.getActionCommand()=="."){ 
 				if(sb.indexOf(".")==-1){
 					if(inputL.getText().equals("0")){
